@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/erase.wav-a4fc7859244d731ad54ae06f2552e42c.sample"
+
+[deps]
+
+source_file="res://Assets/Sounds/erase.wav"
+dest_files=[ "res://.import/erase.wav-a4fc7859244d731ad54ae06f2552e42c.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=false
+compress/mode=0

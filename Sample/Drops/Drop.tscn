@@ -1,0 +1,151 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://characters_packed.png" type="Texture" id=1]
+[ext_resource path="res://Drops/Drop.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Font/Xolonium-Bold.ttf" type="DynamicFontData" id=3]
+
+[sub_resource type="PhysicsMaterial" id=5]
+bounce = 0.2
+
+[sub_resource type="CircleShape2D" id=1]
+radius = 12.0
+
+[sub_resource type="CircleShape2D" id=4]
+
+[sub_resource type="Animation" id=2]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ) ]
+}
+
+[sub_resource type="Animation" id=6]
+resource_name = "flash"
+length = 0.6
+loop = true
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2, 0.3, 0.4, 0.5 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 0, 1, 0, 1, 0, 1 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2, 0.3, 0.4, 0.5 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 0.631373, 0.882353, 1 ), Color( 1, 0.462745, 0.462745, 1 ), Color( 0.996078, 1, 0.521569, 1 ), Color( 0.490196, 1, 0.415686, 1 ), Color( 0.396078, 0.647059, 1, 1 ), Color( 0.807843, 0.494118, 1, 1 ) ]
+}
+
+[sub_resource type="Animation" id=3]
+resource_name = "idle"
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 0, 1 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ) ]
+}
+
+[sub_resource type="CircleShape2D" id=7]
+radius = 18.0
+
+[sub_resource type="DynamicFont" id=8]
+size = 10
+outline_size = 2
+font_data = ExtResource( 3 )
+
+[node name="Drop" type="RigidBody2D" groups=["Drops"]]
+physics_material_override = SubResource( 5 )
+gravity_scale = 2.0
+script = ExtResource( 2 )
+
+[node name="Sprite" type="Sprite" parent="."]
+texture = ExtResource( 1 )
+hframes = 2
+region_enabled = true
+region_rect = Rect2( 0, 0, 48, 24 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource( 1 )
+
+[node name="PointableArea" type="Area2D" parent="." groups=["Pointable"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PointableArea"]
+shape = SubResource( 4 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "idle"
+anims/RESET = SubResource( 2 )
+anims/flash = SubResource( 6 )
+anims/idle = SubResource( 3 )
+
+[node name="StickableArea" type="Area2D" parent="." groups=["Stickable"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StickableArea"]
+shape = SubResource( 7 )
+
+[node name="ConnectedNumber" type="Node2D" parent="."]
+z_index = 1
+z_as_relative = false
+
+[node name="NumberLabel" type="Label" parent="ConnectedNumber"]
+margin_left = 8.0
+margin_top = -16.0
+margin_right = 24.0
+margin_bottom = -8.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 8 )
+
+[connection signal="area_entered" from="StickableArea" to="." method="_on_StickableArea_area_entered"]
+[connection signal="area_exited" from="StickableArea" to="." method="_on_StickableArea_area_exited"]

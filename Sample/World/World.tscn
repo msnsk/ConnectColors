@@ -1,0 +1,106 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://UI/UI.tscn" type="PackedScene" id=1]
+[ext_resource path="res://World/World.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Sounds/touch.wav" type="AudioStream" id=3]
+[ext_resource path="res://Assets/Sounds/erase.wav" type="AudioStream" id=4]
+
+[sub_resource type="Curve2D" id=2]
+_data = {
+"points": PoolVector2Array( 0, 0, 0, 0, 16, 40, 0, 0, 0, 0, 128, 40 )
+}
+
+[sub_resource type="CircleShape2D" id=1]
+radius = 1.0
+
+[sub_resource type="Animation" id=3]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("SpawnPath/Spawner:unit_offset")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0.0 ]
+}
+
+[sub_resource type="Animation" id=4]
+resource_name = "move_spawn_pos"
+length = 0.4
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("SpawnPath/Spawner:unit_offset")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 0.0, 1.0 ]
+}
+
+[node name="World" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="Bin" type="StaticBody2D" parent="."]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Bin"]
+polygon = PoolVector2Array( 0, 208, 64, 240, 80, 240, 144, 208, 144, -64, 160, -80, 160, 272, -16, 272, -16, -80, 160, -80, 144, -64, 0, -64 )
+
+[node name="SpawnPath" type="Path2D" parent="."]
+position = Vector2( 0, -72 )
+curve = SubResource( 2 )
+
+[node name="Spawner" type="PathFollow2D" parent="SpawnPath"]
+position = Vector2( 16, 40 )
+rotate = false
+
+[node name="Drops" type="Node2D" parent="."]
+
+[node name="DropsLine" type="Line2D" parent="."]
+width = 2.0
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="Pointer" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Pointer"]
+shape = SubResource( 1 )
+
+[node name="ComboTimer" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
+
+[node name="PlayTimer" type="Timer" parent="."]
+
+[node name="CountDownTimer" type="Timer" parent="."]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "move_spawn_pos"
+anims/RESET = SubResource( 3 )
+anims/move_spawn_pos = SubResource( 4 )
+
+[node name="EraseAudio" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 4 )
+volume_db = -5.0
+
+[node name="TouchAudio" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 3 )
+volume_db = -5.0
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+
+[node name="UI" parent="UILayer" instance=ExtResource( 1 )]
+
+[connection signal="area_entered" from="Pointer" to="." method="_on_Pointer_area_entered"]
+[connection signal="area_exited" from="Pointer" to="." method="_on_Pointer_area_exited"]
+[connection signal="timeout" from="ComboTimer" to="." method="_on_ComboTimer_timeout"]
+[connection signal="timeout" from="PlayTimer" to="." method="_on_PlayTimer_timeout"]
+[connection signal="timeout" from="CountDownTimer" to="." method="_on_CountDownTimer_timeout"]

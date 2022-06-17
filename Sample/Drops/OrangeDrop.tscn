@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Drops/Drop.tscn" type="PackedScene" id=1]
+
+[sub_resource type="StreamTexture" id=1]
+load_path = "res://.import/characters_packed.png-890290c811414ed077a6b10fd28e12f1.stex"
+
+[node name="OrangeDrop" instance=ExtResource( 1 )]
+color = "Orange"
+
+[node name="Sprite" parent="." index="0"]
+texture = SubResource( 1 )
+region_rect = Rect2( 144, 0, 48, 24 )
