@@ -15,7 +15,7 @@ var is_playing = false
 var is_holding = false
 var pointed_drop
 var active_color = ""
-var holded_drops = []
+var held_drops = []
 
 onready var spawner = $SpawnPath/Spawner
 onready var drops = $Drops
@@ -43,9 +43,9 @@ func _process(_delta):
 
 
 func update_drops_line():
-	if not holded_drops.empty():
+	if not held_drops.empty():
 		var temp_array = PoolVector2Array()
-		for drop in holded_drops:
+		for drop in held_drops:
 			temp_array.append(drop.position)
 		drops_line.points = temp_array
 
@@ -67,25 +67,25 @@ func hold_drop():
 
 func update_drops_connection():
 	if is_holding and pointed_drop:
-		if holded_drops.empty():
+		if held_drops.empty():
 			active_color = pointed_drop.color
 			connect_drop()
 		elif pointed_drop.color == active_color:
-			if holded_drops.size() >= 2 and pointed_drop == holded_drops[-2]:
+			if held_drops.size() >= 2 and pointed_drop == held_drops[-2]:
 				disconnect_drop()
-			elif not pointed_drop in holded_drops:
+			elif not pointed_drop in held_drops:
 				connect_drop()
 
 
 func connect_drop():
 	pointed_drop.anim_player.play("flash")
-	holded_drops.append(pointed_drop)
+	held_drops.append(pointed_drop)
 	drops_line.add_point(pointed_drop.position)
 	print("connected drops: ", drops_line.get_point_count())
 
 
 func disconnect_drop():
-	var canceled_drop = holded_drops.pop_back()
+	var canceled_drop = held_drops.pop_back()
 	canceled_drop.anim_player.stop()
 	canceled_drop.anim_player.play("idle")
 	drops_line.remove_point(drops_line.get_point_count() - 1)
@@ -93,9 +93,9 @@ func disconnect_drop():
 
 
 func erase_drops():
-	if holded_drops.size() < min_erasable:
+	if held_drops.size() < min_erasable:
 		return
-	var erased = holded_drops.duplicate()
+	var erased =  held_drops.duplicate()
 	for drop in erased:
 		drop.queue_free()
 		spawn_drop()
@@ -105,17 +105,17 @@ func erase_drops():
 
 func release_drops(): 
 	is_holding = false
-	for drop in holded_drops:
+	for drop in held_drops:
 		drop.anim_player.stop()
 		drop.anim_player.play("idle")
-	holded_drops.clear()
+	held_drops.clear()
 	drops_line.clear_points()
 
 
 func _on_Pointer_area_entered(area):
 	if area.is_in_group("Pointable"):
 		pointed_drop = area.get_parent()
-		if not holded_drops.empty() and holded_drops[-1] in pointed_drop.stuck_drops:
+		if not held_drops.empty() and held_drops[-1] in pointed_drop.stuck_drops:
 			update_drops_connection()
 
 
